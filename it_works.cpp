@@ -26,16 +26,13 @@ Write Stream Class
 
 [INHERITANCE TREE]
 
-Executable<T>       Stageble
-  execute(T)         set_next_stage(Stageble)
-     |                 |
-     -------------------
-              |
-            Stage
-              |
-    -----------------------
-    |         |           |
-  Input     Output   Transformation
+Executable<T>   Chainable<ChildClass>
+  execute(T)      set_next_stage(ChildClass*)
+     |               |
+     |               |
+  ------------------------------------------------- Stage
+  |         |           |
+Input     Output   Transformation
 
   ... And below are concrete classes
 
@@ -47,40 +44,32 @@ Executable<T>       Stageble
 #include <numeric>
 #include <algorithm>
 
+class Stage {};
+
 template <typename T>
 class Executable {
     public:
         virtual void execute(T data) = 0;
 };
 
-template <typename ChildClass>
-class Stageble {
+// template <typename NextClass>
+class Chainable {
     public:
-        ChildClass* next_stage;
+        Stage* next_stage;
 
-        void set_next_stage(ChildClass* next_st) {
+        void set_next_stage(Stage* next_st) {
             next_stage = next_st;
         };
 };
 
-// template <typename T>
-// class Stage: public Stageble, public Executable<T> {    
-//     public:
-//         Stage<T>* next_stage;
-
-//         void set_next_stage(Stage<T>* next_st) {
-//             next_stage = next_st;
-//         };
-// };
+template <typename T>
+class Output: Stage, public Executable<T> {};
 
 template <typename T>
-class Input: public Executable<T>, public Stageble<Input> {};
+class Transformation: Stage, public Executable<T>, public Chainable {};
 
 template <typename T>
-class Output: public Executable<T>, public Stageble<Output> {};
-
-template <typename T>
-class Transformation: public Executable<T>, public Stageble<Transformation> {};
+class Input: Stage, public Executable<T>, public Chainable {};
 
 /* IMPLEMENTATIONS */
 
