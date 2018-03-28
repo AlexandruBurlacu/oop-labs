@@ -52,7 +52,6 @@ class Executable {
         virtual void execute(T data) = 0;
 };
 
-// template <typename NextClass>
 class Chainable {
     public:
         Stage* next_stage;
