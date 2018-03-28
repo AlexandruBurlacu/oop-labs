@@ -53,29 +53,34 @@ class Executable {
         virtual void execute(T data) = 0;
 };
 
+template <typename ChildClass>
 class Stageble {
     public:
-        void set_next_stage(Stageble* next_st);
-};
+        ChildClass* next_stage;
 
-template <typename T>
-class Stage: public Stageble, public Executable<T> {    
-    public:
-        Stage<T>* next_stage;
-
-        void set_next_stage(Stage<T>* next_st) {
+        void set_next_stage(ChildClass* next_st) {
             next_stage = next_st;
         };
 };
 
-template <typename T>
-class Input: public Stage<T> {};
+// template <typename T>
+// class Stage: public Stageble, public Executable<T> {    
+//     public:
+//         Stage<T>* next_stage;
+
+//         void set_next_stage(Stage<T>* next_st) {
+//             next_stage = next_st;
+//         };
+// };
 
 template <typename T>
-class Output: public Stage<T> {};
+class Input: public Executable<T>, public Stageble<Input> {};
 
 template <typename T>
-class Transformation: public Stage<T> {};
+class Output: public Executable<T>, public Stageble<Output> {};
+
+template <typename T>
+class Transformation: public Executable<T>, public Stageble<Transformation> {};
 
 /* IMPLEMENTATIONS */
 
