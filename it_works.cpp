@@ -24,6 +24,21 @@ GroupBy
 Write File Class
 Write Stream Class
 
+[INHERITANCE TREE]
+
+Executable<T>       Stageble
+  execute(T)         set_next_stage(Stageble)
+     |                 |
+     -------------------
+              |
+            Stage
+              |
+    -----------------------
+    |         |           |
+  Input     Output   Transformation
+
+  ... And below are concrete classes
+
 */
 
 #include <iostream>
@@ -126,26 +141,6 @@ class SplitterTransformation: public Transformation<T> {
             this->next_stage->execute(combine(split(data, delim)));
         };
 };
-
-
-
-
-/* INHERITANCE TREE
-
-Executable<T>       Stageble
-  execute(T)         set_next_stage(Stageble)
-     |                 |
-     -------------------
-              |
-            Stage
-              |
-    -----------------------
-    |         |           |
-  Input     Output   Transformation
-
-  ... And below are concrete classes
-
-*/
 
 int main() {
     Input<std::string>* inp = new StdinInput<std::string>();
