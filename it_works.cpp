@@ -26,16 +26,13 @@ Write Stream Class
 
 [INHERITANCE TREE]
 
-Executable<T>       Stageble
-  execute(T)         set_next_stage(Stageble)
-     |                 |
-     -------------------
-              |
-            Stage
-              |
-    -----------------------
-    |         |           |
-  Input     Output   Transformation
+Executable<T> <- Chainable<ChildClass>
+  execute(T)       set_next_stage(ChildClass*)
+     |                |
+     |                |
+  ---------------------------------- Printable
+  |         |           |
+Input     Output   Transformation
 
   ... And below are concrete classes
 
@@ -46,9 +43,15 @@ Executable<T>       Stageble
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <fstream>
 
 class Printable {
-    operator std::string() const { return "a Printable Class"; }
+    public:
+        operator const std::string () const { return "Printable Class"; };
+
+        std::string to_string() const {
+            return "Printable Class";
+        };
 };
 
 template <typename T>
@@ -57,32 +60,24 @@ class Executable {
         virtual void execute(T data) = 0;
 };
 
-class Stageble {
-    Stageble* next_stage;
+template <typename T>
+class Chainable {
     public:
-        void set_next_stage(Stageble* next_st) {
+        Executable<T>* next_stage;
+
+        void set_next_stage(Executable<T>* next_st) {
             next_stage = next_st;
-        }
+        };
 };
 
 template <typename T>
-class Stage: public Printable, public Stageble, public Executable<T> {
-    // public:
-    //     Stage<T>* next_stage;
-
-    //     void set_next_stage(Stage<T>* next_st) {
-    //         next_stage = next_st;
-    //     };
-};
+class Output: public Printable, public Executable<T> {};
 
 template <typename T>
-class Input: public Stage<T> {};
+class Transformation: public Printable, public Executable<T>, public Chainable<T> {};
 
 template <typename T>
-class Output: public Stage<T> {};
-
-template <typename T>
-class Transformation: public Stage<T> {};
+class Input: public Printable, public Executable<T>, public Chainable<T> {};
 
 /* IMPLEMENTATIONS */
 
@@ -101,6 +96,43 @@ class StdoutOutput: public Output<T> {
     public:
         void execute(T data) {
             std::cout << data << std::endl;
+        };
+};
+
+template <typename T>
+class FileInput: public Input<T> {
+    std::string in_file_name;
+
+    public:
+        FileInput(std::string filename): in_file_name(filename) {};
+
+        void execute(T _data) {
+            std::string data;
+
+            std::ifstream src_file;
+            src_file.open(in_file_name);
+
+            src_file >> data;
+
+            src_file.close();
+            this->next_stage->execute(data);
+        };
+};
+
+template <typename T>
+class FileOutput: public Output<T> {
+    std::string out_file_name;
+
+    public:
+        FileOutput(std::string filename): out_file_name(filename) {};
+
+        void execute(T data) {
+            std::ofstream out_file;
+            out_file.open(out_file_name);
+
+            out_file << data << std::endl;
+
+            out_file.close();
         };
 };
 
@@ -159,10 +191,12 @@ int main() {
     tr1->set_next_stage(tr2);
     tr2->set_next_stage(out);
 
-    while (true) {
+    int count = 10;
+    while (count--) {
         inp->execute("42");
-        std::cout << inp << std::endl;
     }
+    
+    std::cout << (std::string) *inp << std::endl;
 
     return 0;
 }
