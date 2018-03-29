@@ -47,6 +47,10 @@ Executable<T>       Stageble
 #include <numeric>
 #include <algorithm>
 
+class Printable {
+    operator std::string() const { return "a Printable Class"; }
+};
+
 template <typename T>
 class Executable {
     public:
@@ -54,18 +58,21 @@ class Executable {
 };
 
 class Stageble {
+    Stageble* next_stage;
     public:
-        void set_next_stage(Stageble* next_st);
+        void set_next_stage(Stageble* next_st) {
+            next_stage = next_st;
+        }
 };
 
 template <typename T>
-class Stage: public Stageble, public Executable<T> {    
-    public:
-        Stage<T>* next_stage;
+class Stage: public Printable, public Stageble, public Executable<T> {
+    // public:
+    //     Stage<T>* next_stage;
 
-        void set_next_stage(Stage<T>* next_st) {
-            next_stage = next_st;
-        };
+    //     void set_next_stage(Stage<T>* next_st) {
+    //         next_stage = next_st;
+    //     };
 };
 
 template <typename T>
@@ -154,6 +161,7 @@ int main() {
 
     while (true) {
         inp->execute("42");
+        std::cout << inp << std::endl;
     }
 
     return 0;
