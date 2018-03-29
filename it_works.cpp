@@ -26,11 +26,11 @@ Write Stream Class
 
 [INHERITANCE TREE]
 
-Executable<T>   Chainable<ChildClass>
-  execute(T)      set_next_stage(ChildClass*)
-     |               |
-     |               |
-  ------------------------------------------------- Stage
+Executable<T> <- Chainable<ChildClass>
+  execute(T)       set_next_stage(ChildClass*)
+     |                |
+     |                |
+  ---------------------------------- Printable
   |         |           |
 Input     Output   Transformation
 
@@ -43,8 +43,11 @@ Input     Output   Transformation
 #include <vector>
 #include <numeric>
 #include <algorithm>
+#include <fstream>
 
-class Stage {};
+class Printable {
+    operator std::string() const { return "Printable Class"; }
+};
 
 template <typename T>
 class Executable {
@@ -52,23 +55,24 @@ class Executable {
         virtual void execute(T data) = 0;
 };
 
+template <typename T>
 class Chainable {
     public:
-        Stage* next_stage;
+        Executable<T>* next_stage;
 
-        void set_next_stage(Stage* next_st) {
+        void set_next_stage(Executable<T>* next_st) {
             next_stage = next_st;
         };
 };
 
 template <typename T>
-class Output: Stage, public Executable<T> {};
+class Output: public Printable, public Executable<T> {};
 
 template <typename T>
-class Transformation: Stage, public Executable<T>, public Chainable {};
+class Transformation: public Printable, public Executable<T>, public Chainable<T> {};
 
 template <typename T>
-class Input: Stage, public Executable<T>, public Chainable {};
+class Input: public Printable, public Executable<T>, public Chainable<T> {};
 
 /* IMPLEMENTATIONS */
 
@@ -87,6 +91,43 @@ class StdoutOutput: public Output<T> {
     public:
         void execute(T data) {
             std::cout << data << std::endl;
+        };
+};
+
+template <typename T>
+class FileInput: public Input<T> {
+    std::string in_file_name;
+
+    public:
+        FileInput(std::string filename): in_file_name(filename) {};
+
+        void execute(T _data) {
+            std::string data;
+
+            std::ifstream src_file;
+            src_file.open(in_file_name);
+
+            src_file >> data;
+
+            src_file.close();
+            this->next_stage->execute(data);
+        };
+};
+
+template <typename T>
+class FileOutput: public Output<T> {
+    std::string out_file_name;
+
+    public:
+        FileOutput(std::string filename): out_file_name(filename) {};
+
+        void execute(T _data) {
+            std::ofstream out_file;
+            out_file.open(out_file_name);
+
+            out_file << data << std::endl;
+
+            out_file.close();
         };
 };
 
