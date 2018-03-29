@@ -46,7 +46,12 @@ Input     Output   Transformation
 #include <fstream>
 
 class Printable {
-    operator std::string() const { return "Printable Class"; }
+    public:
+        operator const std::string () const { return "Printable Class"; };
+
+        std::string to_string() const {
+            return "Printable Class";
+        };
 };
 
 template <typename T>
@@ -121,7 +126,7 @@ class FileOutput: public Output<T> {
     public:
         FileOutput(std::string filename): out_file_name(filename) {};
 
-        void execute(T _data) {
+        void execute(T data) {
             std::ofstream out_file;
             out_file.open(out_file_name);
 
@@ -188,6 +193,7 @@ int main() {
 
     while (true) {
         inp->execute("42");
+        std::cout << (std::string) *inp << std::endl;
     }
 
     return 0;
