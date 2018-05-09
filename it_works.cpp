@@ -9,7 +9,7 @@
 
 int main() {
     Input<std::string>* inp = new StdinInput<std::string>();
-    Output<std::string>* out = new StdoutOutput<std::string>();
+    Output<std::string>* out = new FileOutput<std::string>("example.txt");
     Transformation<std::string>* tr1 = new UppercaseTransformation<std::string>();
     Transformation<std::string>* tr2 = new SplitterTransformation<std::string>(" \t");
 
@@ -22,7 +22,10 @@ int main() {
         inp->execute("42");
     }
 
+    Printable example;
+
     std::cout << (std::string) *inp << std::endl;
+    std::cout << example.to_string() << std::endl;
 
     return 0;
 }
