@@ -1,4 +1,4 @@
-/* I usually do not write C++, but when I do, it's a template-heavy piece of shit */
+/* I usually do not write C++, but when I do, it's a template-heavy piece of ... code */
 
 #include <iostream>
 #include <string>
@@ -9,7 +9,8 @@
 
 int main() {
     Input<std::string>* inp = new StdinInput<std::string>();
-    Output<std::string>* out = new FileOutput<std::string>("example.txt");
+    // Output<std::string>* out = new FileOutput<std::string>("example.txt");
+    Output<std::string>* out = new StdoutOutput<std::string>();
     Transformation<std::string>* tr1 = new UppercaseTransformation<std::string>();
     Transformation<std::string>* tr2 = new SplitterTransformation<std::string>(" \t");
 
