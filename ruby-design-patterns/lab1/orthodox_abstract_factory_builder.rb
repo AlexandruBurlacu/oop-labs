@@ -1,5 +1,7 @@
-module HighEndComputerFactory
-  extend self
+require 'singleton'
+
+class HighEndComputerFactory
+  include Singleton
 
   def make_computer
     cpu = CPU.new
@@ -32,8 +34,8 @@ module HighEndComputerFactory
 
 end
 
-module LowBudgetComputerFactory
-  extend self
+class LowBudgetComputerFactory
+  include Singleton
 
   def make_computer
     cpu = CPU.new
@@ -68,8 +70,8 @@ module LowBudgetComputerFactory
 
 end
 
-module EnergyEfficientComputerFactory
-  extend self
+class EnergyEfficientComputerFactory
+  include Singleton
 
   def make_computer
     cpu = CPU.new
@@ -110,4 +112,4 @@ class Application
   end
 end
 
-Application.new(EnergyEfficientComputerFactory)
+Application.new(EnergyEfficientComputerFactory.instance)
