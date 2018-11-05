@@ -59,9 +59,11 @@ class EvaluateForthExpression < Visitor
 end
 
 END {
-    computer = Computer.new
-    p computer.accept EditSomePhotos.new
-    p computer.accept PlaySomeGames.new
-    p computer.accept ExplodeComputer.new
-    p computer.accept EvaluateForthExpression.new("+ - 12 2 / 54 2")
+    if __FILE__ == "visitor_example.rb"
+        computer = Computer.new
+        p computer.accept EditSomePhotos.new
+        p computer.accept PlaySomeGames.new
+        p computer.accept ExplodeComputer.new
+        p computer.accept EvaluateForthExpression.new("+ - 12 2 / 54 2")
+    end
 }
