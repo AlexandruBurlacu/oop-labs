@@ -1,10 +1,4 @@
-class Expression
-    def execute
-        raise NotImplementedError.new
-    end
-end
-
-class Number < Expression
+class Number
     def initialize(value)
         @value = value
     end
@@ -14,7 +8,7 @@ class Number < Expression
     end
 end
 
-class Add < Expression
+class Add
     def initialize(left, right)
         @left, @right = left, right
     end
@@ -24,7 +18,7 @@ class Add < Expression
     end
 end
 
-class Multiply < Expression
+class Multiply
     def initialize(left, right)
         @left, @right = left, right
     end
@@ -34,7 +28,7 @@ class Multiply < Expression
     end
 end
 
-class Subtract < Expression
+class Subtract
     def initialize(left, right)
         @left, @right = left, right
     end
@@ -44,7 +38,7 @@ class Subtract < Expression
     end
 end
 
-class Divide < Expression
+class Divide
     def initialize(left, right)
         @left, @right = left, right
     end
@@ -67,10 +61,6 @@ class Parser
         token = next_token
         if token.nil?
             nil
-        elsif token == '('
-            result = expression
-            raise 'Expected )' unless next_token == ')'
-            result
         elsif token == '+'
             Add.new expression, expression
         elsif token == '-'
@@ -90,5 +80,7 @@ end
 
 END {
     # A simple Forth (Polish notation) calculator
-    p Parser.new("+ - 12 2 / 54 2").expression.execute
+    if __FILE__ == "interpreter_example.rb"
+        p Parser.new("+ - 12 2 / 54 2").expression.execute
+    end
 }
