@@ -1,6 +1,6 @@
 class Expression
     def execute
-        NotImplementedError
+        raise NotImplementedError.new
     end
 end
 
