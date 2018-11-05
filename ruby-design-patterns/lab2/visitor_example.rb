@@ -16,19 +16,6 @@ class Visitor
     end
 end
 
-class Computer
-    include Visitable
-
-    attr_reader :cpu, :gpu, :storage, :ram
-
-    def initialize
-        @cpu = "Intel CPU"
-        @gpu = "Nvidia GPU"
-        @storage = "Samsung SSD"
-        @ram = "32 DDR4"
-    end
-end
-
 class PlaySomeGames < Visitor
     def visit(computer)
         "Playing GTA V on a computer with #{computer.cpu}, #{computer.gpu} and damned #{computer.ram}"
@@ -60,6 +47,19 @@ end
 
 END {
     if __FILE__ == "visitor_example.rb"
+        class Computer
+            include Visitable
+        
+            attr_reader :cpu, :gpu, :storage, :ram
+        
+            def initialize
+                @cpu = "Intel CPU"
+                @gpu = "Nvidia GPU"
+                @storage = "Samsung SSD"
+                @ram = "32 DDR4"
+            end
+        end
+        
         computer = Computer.new
         p computer.accept EditSomePhotos.new
         p computer.accept PlaySomeGames.new
