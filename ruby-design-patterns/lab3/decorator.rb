@@ -1,47 +1,46 @@
+require_relative 'state'
+
 class ComputerDecorator < SimpleDelegator
     def initialize(machine)
         @machine = machine
-        super
     end
 end
 
-class GPUEnabledMachine < ComputerDecorator
-    def run_on_gpu(task)
+class ParallelMachine < ComputerDecorator
+    def run_task(task)
         p "Just running on GPU"
-        task[]
-        task[]
-        task[]
+        @machine.run_task task
+        @machine.run_task task
+        @machine.run_task task
     end
 end
 
-class MachineWithDocker < ComputerDecorator
-    def containerize(service)
-        p "Just running safely in a container"
-        service[]
-        p "Exiting the container"
-    end
-end
-
-class WithInfinibandAdapter < ComputerDecorator
-    def connect(machine)
-        raise NotImplementedError.new
+class SlowMachine < ComputerDecorator
+    def run_task(task)
+        p "I'm slow to start"
+        sleep 1
+        @machine.run_task task
     end
 end
 
 class SimpleComputer
     def initialize(name)
         @name = name
+        @state_context = StateContext.new
     end
 
-    def just_run(task)
+    def run_task(task)
         p "Just running"
-        task[]
+        @state_context.run_state task
     end
 end
 
-END {
+if __FILE__ == $0
     comp = SimpleComputer.new "host1"
-    gpu_comp_with_docker = MachineWithDocker.new GPUEnabledMachine.new comp
+    gpu_comp = ParallelMachine.new SlowMachine.new comp
 
-    gpu_comp_with_docker.run_on_gpu -> { p 42 }
-}
+    params, func, output = [2], -> (x) { x * 42 }, nil
+    task = Computation.new params, func, output
+
+    gpu_comp.run_task task
+end

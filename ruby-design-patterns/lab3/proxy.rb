@@ -33,7 +33,7 @@ class NormalObject
     end
 end
 
-END {
+if __FILE__ == $0
     norm_obj = NormalObject.new 32
     p norm_obj.run
 
@@ -42,4 +42,4 @@ END {
 
     obj_with_logs = LoggerProxy.new norm_obj
     p obj_with_logs.run
-}
+end
