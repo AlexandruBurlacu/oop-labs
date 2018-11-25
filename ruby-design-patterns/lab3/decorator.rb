@@ -24,8 +24,7 @@ class SlowMachine < ComputerDecorator
 end
 
 class SimpleComputer
-    def initialize(name)
-        @name = name
+    def initialize
         @state_context = StateContext.new
     end
 
@@ -36,7 +35,7 @@ class SimpleComputer
 end
 
 if __FILE__ == $0
-    comp = SimpleComputer.new "host1"
+    comp = SimpleComputer.new
     slow_gpu_comp = ParallelMachine.new SlowMachine.new comp
 
     params, func, output = [2], -> (x) { x * 42 }, nil
