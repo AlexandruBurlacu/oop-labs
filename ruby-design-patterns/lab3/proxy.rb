@@ -1,11 +1,17 @@
+require_relative 'decorator'
+
 class SuperuserAuthProxy
-    def initialize(target)
-        @target = target
+    def initialize
+        @target = SimpleComputer.new "host1"
     end
 
-    def run(user)
+    def set_new_target(new_target)
+        @target = new_target
+    end
+
+    def run_task(user, task)
         if user.admin
-            @target.run
+            @target.run_task task
         else
             raise 'You need admin credentials to use this method'
         end
@@ -13,8 +19,12 @@ class SuperuserAuthProxy
 end
 
 class LoggerProxy
-    def initialize(target)
-        @target = target
+    def initialize
+        @target = SimpleComputer.new "host1"
+    end
+
+    def set_new_target(new_target)
+        @target = new_target
     end
 
     def method_missing(method, *args, &block)
@@ -23,23 +33,15 @@ class LoggerProxy
     end
 end
 
-class NormalObject
-    def initialize(some_value)
-        @some_value = some_value
-    end
-
-    def run
-        @some_value * 2
-    end
-end
-
 if __FILE__ == $0
-    norm_obj = NormalObject.new 32
-    p norm_obj.run
+    params, func, output = [2], -> (x) { x * 42 }, nil
+    task = Computation.new params, func, output
+    Certificate = Struct.new(:admin)
 
-    protected_norm_obj = SuperuserAuthProxy.new norm_obj
-    p protected_norm_obj.run Struct.new(:admin).new(true)
+    comp_with_logs = LoggerProxy.new
+    comp_with_logs.run_task task
 
-    obj_with_logs = LoggerProxy.new norm_obj
-    p obj_with_logs.run
+    protected_comp = SuperuserAuthProxy.new
+    protected_comp.set_new_target(comp_with_logs)
+    protected_comp.run_task Certificate.new(true), task
 end

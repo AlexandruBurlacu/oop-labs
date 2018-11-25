@@ -37,10 +37,10 @@ end
 
 if __FILE__ == $0
     comp = SimpleComputer.new "host1"
-    gpu_comp = ParallelMachine.new SlowMachine.new comp
+    slow_gpu_comp = ParallelMachine.new SlowMachine.new comp
 
     params, func, output = [2], -> (x) { x * 42 }, nil
     task = Computation.new params, func, output
 
-    gpu_comp.run_task task
+    slow_gpu_comp.run_task task
 end
